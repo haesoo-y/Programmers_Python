@@ -1,64 +1,34 @@
 def solution(numbers, hand):
     answer = ''
-    left = [1, 4, 7, '*']
-    center = [2, 5, 8, 0]
-    right = [3, 6, 9, '#']
-    position = {'left':'*', 'right':'#'}
-    finger = {'right': 'R', 'left': 'L'}
+    left_lst = [1, 4, 7, '*']
+    right_lst = [3, 6, 9, '#']
+    mid_lst = [2, 5, 8, 0]
+    left = '*'
+    right = '#'
     for i in numbers:
-        # 왼쪽 위치 번호일 때
-        if i in left:
-            position['left'] = i
+        if i in left_lst:
+            left = i
             answer += 'L'
-        # 오른쪽 위치 번호일 때
-        elif i in right:
-            position['right'] = i
+        elif i in right_lst:
+            right = i
             answer += 'R'
-        # 가운데 위치 번호일 때
-        else :
-            index = center.index(i)
-            # 양 손가락이 모두 가운데
-            if position['left'] in center and position['right'] in center:
-                if abs(index-center.index(position['left'])) < abs(index-center.index(position['right'])):
+        else:  # 이번 번호가 중간 번호일 경우
+            left_diff = abs(left_lst.index(left) - mid_lst.index(i)) + 1 if left in left_lst else abs(
+                mid_lst.index(left) - mid_lst.index(i))
+            right_diff = abs(right_lst.index(right) - mid_lst.index(i)) + 1 if right in right_lst else abs(
+                mid_lst.index(right) - mid_lst.index(i))
+            if left_diff < right_diff:
+                left = i
+                answer += 'L'
+            elif left_diff > right_diff:
+                right = i
+                answer += 'R'
+            else:
+                if hand == 'left':
                     answer += 'L'
-                    position['left'] = i
-                elif abs(index-center.index(position['left'])) > abs(index-center.index(position['right'])):
+                    left = i
+                else:
                     answer += 'R'
-                    position['right'] = i
-                else :
-                    answer += finger[hand]
-                    position[hand] = i
-            # 왼 손가락만 가운데
-            elif position['left'] in center :
-                if abs(index-center.index(position['left'])) < abs(index-right.index(position['right']))+1:
-                    answer += 'L'
-                    position['left'] = i
-                elif abs(index-center.index(position['left'])) > abs(index-right.index(position['right']))+1:
-                    answer += 'R'
-                    position['right'] = i
-                else :
-                    answer += finger[hand]
-                    position[hand] = i
-            # 오른 손가락만 가운데
-            elif position['right'] in center :
-                if abs(index-left.index(position['left']))+1 < abs(index-center.index(position['right'])):
-                    answer += 'L'
-                    position['left'] = i
-                elif abs(index-left.index(position['left']))+1 > abs(index-center.index(position['right'])):
-                    answer += 'R'
-                    position['right'] = i
-                else :
-                    answer += finger[hand]
-                    position[hand] = i
-            # 양 손가락이 가운데가 아닐 때
-            else :
-                if abs(index-left.index(position['left'])) < abs(index-right.index(position['right'])):
-                    answer += 'L'
-                    position['left'] = i
-                elif abs(index-left.index(position['left'])) > abs(index-right.index(position['right'])):
-                    answer += 'R'
-                    position['right'] = i
-                else :
-                    answer += finger[hand]
-                    position[hand] = i
+                    right = i
+
     return answer
