@@ -1,44 +1,38 @@
 from itertools import combinations
 from bisect import bisect_left
 
-
-def make_cases(lst):
-    results = []
-    for k in range(5):  # k개를 뽑을 경우
-        for t in combinations([0, 1, 2, 3], k):
-            result = ''
-            for i in range(4):
-                if i in t:
-                    result += lst[i]
+def make_dic(lst):  # 모든 경우의 수를 담은 딕셔너리 만들기
+    dic = dict()
+    for string in lst:
+        tmp_lst = string.split()  # ['java', 'backend', 'junior', 'pizza', '150']
+        for i in range(5):  # 0개 고를 때 ~ 4개 고를 때
+            for tpl in list(combinations([0, 1, 2, 3], i)):  # 0~3 중에 i개 고르는 튜플 tpl
+                tmp = ''
+                for j in range(4):
+                    if j in tpl:
+                        tmp += tmp_lst[j]
+                    else:
+                        tmp += '-'
+                if dic.get(tmp):
+                    dic[tmp].append(int(tmp_lst[4]))
                 else:
-                    result += '-'
-            results.append(result)
-    return results
+                    dic[tmp] = [int(tmp_lst[4])]
 
+    for key in dic.keys():
+        dic[key].sort()
+
+    return dic
 
 def solution(info, query):
     answer = []
-    all_people = {}
-    for i in info:
-        info_lst = [x for x in i.split()]
-        cases = make_cases(info_lst)
-        for case in cases:
-            if all_people.get(case):
-                all_people[case].append(int(info_lst[-1]))
-            else:
-                all_people[case] = [int(info_lst[-1])]
-
-    for key in all_people.keys():
-        all_people[key].sort()
-
+    all_info = make_dic(info)
     for q in query:
-        query_lst = [x for x in q.split()]
-        target = query_lst[0] + query_lst[2] + query_lst[4] + query_lst[6]
-        if target in all_people.keys():
-            length = len(all_people[target])
-            index = bisect_left(all_people[target], int(query_lst[-1]))
-            answer.append(length - index)
-        else:
+        q_lst = q.split()
+        target = q_lst[0] + q_lst[2] + q_lst[4] + q_lst[6]
+        if target not in all_info.keys():
             answer.append(0)
+            continue
+        index = bisect_left(all_info[target], int(q_lst[7]))
+        answer.append(len(all_info[target]) - index)
 
     return answer
