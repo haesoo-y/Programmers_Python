@@ -1,35 +1,22 @@
-import heapq
-
 INF = int(1e9)
-
-
-def dijkstra(x, y):
-    num = len(graph)
-    distance = [INF] * (num + 1)
-    distance[x] = 0
-    pq = [[0, x]]  # (비용, 지점) 을 담은 우선순위 큐
-    while pq:
-        c, z = heapq.heappop(pq)
-        if distance[z] < c:
-            continue
-        for i in graph[z]:
-            ncost = c + i[1]  # z를 거쳐서 i[0] 에 가는 비용
-            if ncost < distance[i[0]]:  # i[0] 에 가는 비용보다 작으면
-                distance[i[0]] = ncost
-                heapq.heappush(pq, (ncost, i[0]))
-    return distance[y]  # x에서 y로 가는 최소 비용
-
-
 def solution(n, s, a, b, fares):
     answer = INF
-    global graph
-    graph = [[] for i in range(n + 1)]  # 각 인덱스에 (지점z, 비용c) 저장할 것
-    for fare in fares:
-        graph[fare[0]].append((fare[1], fare[2]))
-        graph[fare[1]].append((fare[0], fare[2]))
-
+    graph = [[INF] * (n + 1) for _ in range(n + 1)]
+    # 비용 정리
     for i in range(1, n + 1):
-        answer = min(answer, dijkstra(s, i) + dijkstra(i, a) + dijkstra(i, b))
-        print('answer', answer)
+        graph[i][i] = 0
+    for fare in fares:
+        graph[fare[0]][fare[1]] = fare[2]
+        graph[fare[1]][fare[0]] = fare[2]
+
+    # 플로이드 워셜
+    for k in range(1, n + 1):
+        for x in range(1, n + 1):
+            for y in range(1, n + 1):
+                graph[x][y] = min(graph[x][y], graph[x][k] + graph[k][y])
+
+    # 답 구하기 a,b 가 흩어지는 지점: k
+    for k in range(1, n + 1):
+        answer = min(answer, graph[s][k] + graph[k][a] + graph[k][b])
 
     return answer
