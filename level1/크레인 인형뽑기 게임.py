@@ -1,24 +1,18 @@
 def solution(board, moves):
     answer = 0
-    line = len(board)
-    graph = [[] for _ in range(line + 1)]
-    basket = []
-    # 그래프 만들기
-    for i in range(line - 1, -1, -1):
-        for j in range(line):
-            if board[i][j] == 0:
-                continue
-            graph[j + 1].append(board[i][j])
-
-    # 뽑아서 바구니에 넣기
+    stack = [0]
     for i in moves:
-        if not graph[i]:
-            continue
-        x = graph[i].pop()
-        if basket and basket[-1] == x:
-            basket.pop()
-            answer += 2
-        else:
-            basket.append(x)
+        i_ = i - 1
+        for lst in board:  # 뽑아서 스택에 추가
+            if lst[i_] == 0:
+                continue
+            else:
+                stack.append(lst[i_])
+                lst[i_] = 0
+                if stack[-1] == stack[-2]:
+                    stack.pop()
+                    stack.pop()
+                    answer += 2
+                break
 
     return answer
